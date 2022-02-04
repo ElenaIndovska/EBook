@@ -1,0 +1,79 @@
+﻿@model EBook.ViewModels.BookViewModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+@if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))
+{   <p>
+        <a asp-action="Create">Create New</a>
+    </p>
+}
+<form asp-controller="Books" asp-action="Index" method="get">
+    <p>
+        <select asp-for="BookGenre" asp-items="Model.Genres">
+            <option value="">All</option>
+        </select>
+        Title: <input type="text" asp-for="SearchString" />
+        <input type="submit" value="Filter" />
+    </p>
+</form>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Books[0].Title)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Books[0].Genre)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Books[0].Year)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Books[0].ImgFile)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Books[0].Authors)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Books)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Title)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Genre)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Year)
+                </td>
+                <td>
+                    <img src="~/images/@item.ImgFile" height="150" />
+                </td>
+                <td>
+                    @foreach (var author in item.Authors)
+                    {
+                        <a asp-controller="Authors" asp-action="Details" asp-route-id="@author.AuthorId"> @author.Author.Name</a> <br />
+                    }
+
+                </td>
+                <td>
+                    @if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))
+                    {<a asp-action="Edit" asp-route-id="@item.Id">Edit</a>} |
+                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                    @if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))
+                    {<a asp-action="Delete" asp-route-id="@item.Id">Delete</a>} |
+                    
+                    <a asp-action="Download" asp-route-id="@item.Id">Download</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
